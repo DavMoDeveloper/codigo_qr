@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:codigo_qr/ui/widgets/general_widget.dart';
+import 'package:codigo_qr/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -10,11 +13,15 @@ class TextFieldNormalWidget extends StatelessWidget {
   String text;
   String icon;
   int? maxLines;
+  TextEditingController controller;
+  InputTypeEnum? type;
 
   TextFieldNormalWidget({
     required this.text,
     required this.icon,
-    this.maxLines
+    this.maxLines,
+    required this.controller,
+    this.type = InputTypeEnum.normal
   });
 
   @override
@@ -37,8 +44,11 @@ class TextFieldNormalWidget extends StatelessWidget {
               ),
             ],
           ),
-          child: TextField(
+          child: TextFormField(
+            controller: controller,
             maxLines: maxLines,
+            maxLength: type == InputTypeEnum.dni ? 8 : null,
+            keyboardType: type == InputTypeEnum.dni ? TextInputType.number : TextInputType.text,
             decoration: InputDecoration(
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
@@ -62,7 +72,31 @@ class TextFieldNormalWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14.0),
                 borderSide: BorderSide.none,
               ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14.0),
+                borderSide: BorderSide.none,
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14.0),
+                borderSide: BorderSide.none,
+              ),
+              errorStyle: TextStyle(
+                fontSize: 12.0,
+              ),
             ),
+            validator: (value){
+
+              if(value != null && value.isEmpty){
+                return "Campo obligatorio";
+              }
+
+              if(value != null && value.length <= 5){
+                return "Debe de contener más de 6 letras";
+              }
+
+              return null;
+
+            },
           ),
         ),
       ],
