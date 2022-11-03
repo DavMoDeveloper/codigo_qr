@@ -1,26 +1,33 @@
+import 'package:codigo_qr/models/qr_model.dart';
 import 'package:codigo_qr/ui/widgets/general_widget.dart';
 import 'package:codigo_qr/utils/assets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ItemListWidget extends StatelessWidget {
-  const ItemListWidget({Key? key}) : super(key: key);
+  QRModel model;
+
+  ItemListWidget({
+    required this.model,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14.0),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            )
-          ]),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Row(
         children: [
           Expanded(
@@ -28,7 +35,7 @@ class ItemListWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Lorem ipsum dolor sit amet.",
+                  model.title,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 15.0,
@@ -36,8 +43,11 @@ class ItemListWidget extends StatelessWidget {
                 ),
                 divider3,
                 Text(
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
-                  style: TextStyle(height: 1.2, color: Colors.black54),
+                  model.description,
+                  style: TextStyle(
+                    height: 1.2,
+                    color: Colors.black54,
+                  ),
                 ),
                 divider6,
                 Row(
@@ -48,7 +58,7 @@ class ItemListWidget extends StatelessWidget {
                       color: Colors.black54,
                     ),
                     Text(
-                      "12/12/2022",
+                      model.date,
                       style: TextStyle(
                         color: Colors.black54,
                       ),
@@ -60,7 +70,7 @@ class ItemListWidget extends StatelessWidget {
                       color: Colors.black54,
                     ),
                     Text(
-                      "10:30 am",
+                      model.time,
                       style: TextStyle(
                         color: Colors.black54,
                       ),
@@ -70,7 +80,13 @@ class ItemListWidget extends StatelessWidget {
               ],
             ),
           ),
-          SvgPicture.asset(Assets.iconLink)
+          InkWell(
+            onTap: () {
+              Uri url = Uri.parse(model.url);
+              launchUrl(url);
+            },
+            child: SvgPicture.asset(Assets.iconLink),
+          ),
         ],
       ),
     );

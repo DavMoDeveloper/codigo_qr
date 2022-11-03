@@ -1,3 +1,6 @@
+import 'package:codigo_qr/db/db_admin.dart';
+import 'package:codigo_qr/models/qr_model.dart';
+import 'package:codigo_qr/providers/example_provider.dart';
 import 'package:codigo_qr/ui/general/colors.dart';
 import 'package:codigo_qr/ui/pages/scanner_page.dart';
 import 'package:codigo_qr/ui/widgets/button_filter_widget.dart';
@@ -6,6 +9,7 @@ import 'package:codigo_qr/ui/widgets/item_list_widget.dart';
 import 'package:codigo_qr/utils/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,19 +18,32 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String buttonValue = "Hoy";
+  // List<QRModel> qrList = [];
+  //
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   getData();
+  // }
+  //
+  // Future<void> getData() async {
+  //   qrList = await DBAdmin.db.getQRData();
+  //   setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
+
+    ExampleProvider _exampleProvider = Provider.of<ExampleProvider>(context);
+    print("BUILD HOME!!");
+
     return Scaffold(
       backgroundColor: kBrandSecondaryColor,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ScannerPage(),
-            ),
-          );
+              context, MaterialPageRoute(builder: (context) => ScannerPage()));
         },
         backgroundColor: kBrandPrimaryColor,
         child: SvgPicture.asset(
@@ -66,6 +83,12 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         divider40,
+                        Text(
+                          _exampleProvider.counter.toString(),
+                          style: TextStyle(
+                            fontSize: 40,
+                          ),
+                        ),
                         Text(
                           "Historial de Escaneos",
                           style: TextStyle(
@@ -111,22 +134,49 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Column(
-                        children: [
-                          ItemListWidget(),
-                          ItemListWidget(),
-                          ItemListWidget(),
-                          ItemListWidget(),
-                          ItemListWidget(),
-                          ItemListWidget(),
-                          ItemListWidget(),
-                        ],
-                      ),
-                    ),
+                  // Expanded(
+                  //   child: SingleChildScrollView(
+                  //     physics: const BouncingScrollPhysics(),
+                  //     child: Column(
+                  //       children: qrList.map((QRModel e) => ItemListWidget(model: e,)).toList(),
+                  //     ),
+                  //   ),
+                  // ),
+
+                  // Expanded(
+                  //   child: ListView.builder(
+                  //     physics: const BouncingScrollPhysics(),
+                  //     itemCount: qrList.length,
+                  //     itemBuilder: (BuildContext context, int index) {
+                  //       return ItemListWidget(
+                  //         model: qrList[index],
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
+
+                  FutureBuilder(
+                    future: DBAdmin.db.getQRData(),
+                    builder: (BuildContext context, AsyncSnapshot snap){
+                      if(snap.hasData){
+                        List<QRModel> list = snap.data;
+                        return Expanded(
+                          child: ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: list.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ItemListWidget(
+                                model: list[index],
+                              );
+                            },
+                          ),
+                        );
+                      }
+                      return Center(child: CircularProgressIndicator(),);
+                    },
                   ),
+
+
                 ],
               ),
             ),

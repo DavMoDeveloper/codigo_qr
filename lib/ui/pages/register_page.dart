@@ -1,3 +1,6 @@
+import 'package:codigo_qr/db/db_admin.dart';
+import 'package:codigo_qr/models/qr_model.dart';
+import 'package:codigo_qr/providers/example_provider.dart';
 import 'package:codigo_qr/ui/general/colors.dart';
 import 'package:codigo_qr/ui/widgets/button_normal_widget.dart';
 import 'package:codigo_qr/ui/widgets/general_widget.dart';
@@ -6,14 +9,16 @@ import 'package:codigo_qr/utils/assets.dart';
 import 'package:codigo_qr/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class RegisterPage extends StatelessWidget {
-
   String valueQR;
 
-  RegisterPage({required this.valueQR,});
-
+  RegisterPage({
+    required this.valueQR,
+  });
 
   final _keyForm = GlobalKey<FormState>();
 
@@ -23,6 +28,10 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    ExampleProvider _exampleProvider = Provider.of<ExampleProvider>(context, listen: false);
+    print("BUILD REGISTER!!!!!!");
+
     return Scaffold(
       backgroundColor: kBrandSecondaryColor,
       body: Column(
@@ -82,7 +91,6 @@ class RegisterPage extends StatelessWidget {
                         ),
                         divider30,
 
-
                         TextFieldNormalWidget(
                           text: "Título",
                           icon: Assets.iconTitle,
@@ -107,7 +115,6 @@ class RegisterPage extends StatelessWidget {
                         //   type: InputTypeEnum.dni,
                         // ),
 
-
                         divider30,
                         const Text(
                           "Qr Generado",
@@ -118,16 +125,78 @@ class RegisterPage extends StatelessWidget {
                           data: valueQR,
                         ),
                         divider14,
+                        // Text(
+                        //   _exampleProvider.counter.toString(),
+                        //   style: TextStyle(
+                        //     fontSize: 40,
+                        //   ),
+                        // ),
 
-                        ButtonNormalWidget(
-                          text: "Registrar",
-                          onPressed: (){
-                            if(_keyForm.currentState!.validate()){
-
-                            }
+                        Consumer<ExampleProvider>(
+                          builder: (context, provider, _) {
+                            return Text(
+                              provider.counter.toString(),
+                              style: TextStyle(
+                                fontSize: 40.0,
+                              ),
+                            );
                           },
                         ),
 
+                        ButtonNormalWidget(
+                          text: "Registrar",
+                          onPressed: () async {
+                            _exampleProvider.addCounter();
+
+                            // if(_keyForm.currentState!.validate()){
+                            //
+                            //   final DateTime now = DateTime.now();
+                            //   final DateFormat formatterDate =
+                            //   DateFormat('dd-MM-yyyy');
+                            //   final DateFormat formatterTime = DateFormat('Hm');
+                            //   final String formattedDate =
+                            //   formatterDate.format(now);
+                            //   final String formattedTime =
+                            //   formatterTime.format(now);
+                            //
+                            //   QRModel model = QRModel(
+                            //     title: _titleController.text,
+                            //     description: _descriptionController.text,
+                            //     date: formattedDate,
+                            //     time: formattedTime,
+                            //     url: valueQR,
+                            //   );
+                            //
+                            //   int res = await DBAdmin.db.insertQR(model);
+                            //
+                            //   if (res > 0) {
+                            //     ScaffoldMessenger.of(context).showSnackBar(
+                            //       SnackBar(
+                            //         backgroundColor: kBrandSecondaryColor,
+                            //         behavior: SnackBarBehavior.floating,
+                            //         shape: RoundedRectangleBorder(
+                            //             borderRadius: BorderRadius.circular(14.0)
+                            //         ),
+                            //         content: Row(
+                            //           children: [
+                            //             Icon(
+                            //               Icons.check_circle,
+                            //               color: Colors.white,
+                            //             ),
+                            //             dividerWidth10,
+                            //             Text(
+                            //               "Registro realizado con éxito.",
+                            //             ),
+                            //           ],
+                            //         ),
+                            //       ),
+                            //     );
+                            //     Navigator.pop(context);
+                            //   }
+                            //
+                            // }
+                          },
+                        ),
                       ],
                     ),
                   ),
