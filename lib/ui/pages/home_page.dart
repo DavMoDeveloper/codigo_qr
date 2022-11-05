@@ -1,5 +1,6 @@
 import 'package:codigo_qr/db/db_admin.dart';
 import 'package:codigo_qr/models/qr_model.dart';
+import 'package:codigo_qr/providers/db_provider.dart';
 import 'package:codigo_qr/providers/example_provider.dart';
 import 'package:codigo_qr/ui/general/colors.dart';
 import 'package:codigo_qr/ui/pages/scanner_page.dart';
@@ -20,12 +21,16 @@ class _HomePageState extends State<HomePage> {
   String buttonValue = "Hoy";
   // List<QRModel> qrList = [];
   //
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   getData();
-  // }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) {
+      DBProvider _dbProvider = Provider.of<DBProvider>(context, listen: false);
+      _dbProvider.getDataProvider();
+      print(_dbProvider.qrList);
+    });
+  }
   //
   // Future<void> getData() async {
   //   qrList = await DBAdmin.db.getQRData();
@@ -34,9 +39,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     ExampleProvider _exampleProvider = Provider.of<ExampleProvider>(context);
-    print("BUILD HOME!!");
+    DBProvider _dbProvider = Provider.of<DBProvider>(context, listen: true);
+    print("BUILD HOME!!!!!");
 
     return Scaffold(
       backgroundColor: kBrandSecondaryColor,
@@ -154,29 +159,60 @@ class _HomePageState extends State<HomePage> {
                   //     },
                   //   ),
                   // ),
+                  //_dbProvider.isLoading ? CircularProgressIndicator() : Text(_dbProvider.qrList.toString()),
+                  // Consumer<DBProvider>(
+                  //   builder: (context, provider, _) {
+                  //     return !provider.isLoading ? Expanded(
+                  //         child: ListView.builder(
+                  //           physics: const BouncingScrollPhysics(),
+                  //           itemCount: provider.qrList.length,
+                  //           itemBuilder: (BuildContext context, int index) {
+                  //             return ItemListWidget(
+                  //               model: provider.qrList[index],
+                  //             );
+                  //           },
+                  //         ),
+                  //       ) : Center(child: CircularProgressIndicator(),);
 
-                  FutureBuilder(
-                    future: DBAdmin.db.getQRData(),
-                    builder: (BuildContext context, AsyncSnapshot snap){
-                      if(snap.hasData){
-                        List<QRModel> list = snap.data;
-                        return Expanded(
+                  //   },
+                  // ),
+                  !_dbProvider.isLoading
+                      ? Expanded(
                           child: ListView.builder(
                             physics: const BouncingScrollPhysics(),
-                            itemCount: list.length,
+                            itemCount: _dbProvider.qrList.length,
                             itemBuilder: (BuildContext context, int index) {
                               return ItemListWidget(
-                                model: list[index],
+                                model: _dbProvider.qrList[index],
                               );
                             },
                           ),
-                        );
-                      }
-                      return Center(child: CircularProgressIndicator(),);
-                    },
-                  ),
-
-
+                        )
+                      : Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                  // FutureBuilder(
+                  //   future: DBAdmin.db.getQRData(),
+                  //   builder: (BuildContext context, AsyncSnapshot snap) {
+                  //     if (snap.hasData) {
+                  //       List<QRModel> list = snap.data;
+                  //       return Expanded(
+                  //         child: ListView.builder(
+                  //           physics: const BouncingScrollPhysics(),
+                  //           itemCount: list.length,
+                  //           itemBuilder: (BuildContext context, int index) {
+                  //             return ItemListWidget(
+                  //               model: list[index],
+                  //             );
+                  //           },
+                  //         ),
+                  //       );
+                  //     }
+                  //     return Center(
+                  //       child: CircularProgressIndicator(),
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
             ),

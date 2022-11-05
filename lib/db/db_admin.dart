@@ -7,20 +7,22 @@ import 'package:sqflite/sqflite.dart';
 
 class DBAdmin {
   static final DBAdmin db = DBAdmin._();
+
   DBAdmin._();
 
-  Database? myDatabase;
+  Database? _myDatabase;
 
   Future<Database?> getDatabase() async {
-    if (myDatabase != null) {
-      return myDatabase;
+    if (_myDatabase != null) {
+      return _myDatabase;
     }
-    myDatabase = await initDatabase();
-    return myDatabase;
+    _myDatabase = await initDatabase();
+    return _myDatabase;
   }
 
   Future<Database> initDatabase() async {
     Directory directory = await getApplicationDocumentsDirectory();
+    // print(directory.path);
     String path = join(directory.path, "QrDB.db");
     return openDatabase(
       path,
@@ -50,12 +52,20 @@ class DBAdmin {
 
   Future<List<QRModel>> getQRData() async{
     Database? db = await getDatabase();
-    List qrList= await db!.query("QR");
-    List<QRModel> listModel = [];
-    qrList.forEach((element) {
-      QRModel model = QRModel.fromJson(element);
-      listModel.add(model);
-    });
+    List qrList = await db!.query("QR");
+    // for(var item in qrList){
+    //   print(item);
+    // }
+    // List<QRModel> listModel = [];
+    //
+    // qrList.forEach((element) {
+    //   QRModel model = QRModel.matasquita(element);
+    //   listModel.add(model);
+    // });
+
+    List<QRModel> listModel = qrList.map((e) => QRModel.fromJson(e)).toList();
+
     return listModel;
   }
+
 }
